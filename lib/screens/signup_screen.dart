@@ -22,6 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _usernameController = TextEditingController();
   Uint8List? _image;
   late var scaffold;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -41,6 +42,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void signUpUser(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
     if (_image == null) {
       showSnackBar('Please select an image', context);
       return;
@@ -57,6 +62,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (response != 'success') {
       showSnackBar(response, context);
     }
+
+    setState(() {
+      _isLoading = false;
+    });
     print(response);
   }
 
@@ -145,10 +154,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(4)),
                         color: blueColor),
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('Sign Up',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
                 Flexible(flex: 2, child: Container()),
