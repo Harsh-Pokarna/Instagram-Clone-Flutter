@@ -18,6 +18,7 @@ class AddPostScreen extends StatefulWidget {
 class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file;
   final _captionController = TextEditingController();
+  bool _isLoading = false;
 
   void selecteImage() {
     showDialog(
@@ -75,6 +76,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   void postImage(User user) async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
       String res = await FirestoreMethods().uploadPost(
         description: _captionController.text,
         file: _file!,
@@ -83,13 +87,18 @@ class _AddPostScreenState extends State<AddPostScreen> {
         profileImage: user.photoUrl,
       );
 
-      if(res == 'success') {
+      if (res == 'success') {
         showSnackBar('Image has been posted', context);
       } else {
         showSnackBar(res, context);
       }
     } catch (error) {
       showSnackBar(error.toString(), context);
+    } finally {
+      setState(() {
+        _isLoading = false;
+        _file = null;
+      });
     }
   }
 
@@ -110,7 +119,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
               backgroundColor: mobileBackgroundColor,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    _file = null; 
+                  });
+                },
               ),
               title: const Text('Add Post'),
               actions: [
@@ -129,6 +142,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
             ),
             body: Column(
               children: [
+                _isLoading
+                    ? const LinearProgressIndicator()
+                    : const Padding(padding: EdgeInsets.symmetric(vertical: 0)),
+                const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
