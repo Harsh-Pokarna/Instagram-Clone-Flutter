@@ -34,7 +34,7 @@ class FirestoreMethods {
       _firestore.collection('posts').doc(postId).set(post.toJson());
       res = 'success';
     } catch (error) {
-      res = error.toString();
+      res = error.toString(); 
     }
     return res;
   }
