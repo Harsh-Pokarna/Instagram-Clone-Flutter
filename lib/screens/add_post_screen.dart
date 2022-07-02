@@ -67,6 +67,18 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   @override
+  void dispose() {
+    _captionController.dispose();
+    super.dispose();
+  }
+
+  void postImage(User user) async {
+    try {
+      
+    } catch (error) {}
+  }
+
+  @override
   Widget build(BuildContext context) {
   User user = Provider.of<UserProvider>(context, listen: false).getUser;
 
@@ -87,7 +99,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         title: const Text('Add Post'),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () => postImage(user),
             child: const Text(
               'Post',
               style: TextStyle(
