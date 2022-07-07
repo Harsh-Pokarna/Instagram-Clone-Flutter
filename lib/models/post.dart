@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagram_clone/models/user.dart';
 
@@ -9,7 +11,7 @@ class Post {
   final String postId;
   final datePublished;
   final String postUrl;
-  final likes;
+  final List likes;
 
   Post({
     required this.description,
@@ -33,8 +35,7 @@ class Post {
         'likes': likes,
       };
 
-  static Post fromSanp(DocumentSnapshot snapshot) {
-    var map = snapshot.data() as Map<String, dynamic>;
+  static Post fromSanp(Map map) {
     return Post(
       description: map['description'],
       username: map['username'],
