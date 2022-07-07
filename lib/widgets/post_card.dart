@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/models/user.dart';
 import 'package:instagram_clone/providers/user_provider.dart';
+import 'package:instagram_clone/resources/firestore_methods.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
@@ -96,9 +97,16 @@ class _PostCardState extends State<PostCard> {
           ),
           // IMAGE SECTION
           GestureDetector(
-            onDoubleTap: () => setState(() {
-              isLikeAnimating = true;
-            }),
+            onDoubleTap: () async {
+              await FirestoreMethods().likePost(
+                widget.post.postId,
+                widget.post.uid,
+                widget.post.likes,
+              );
+              setState(() {
+                isLikeAnimating = true;
+              });
+            },
             child: Stack(
               alignment: Alignment.center,
               children: [
@@ -134,11 +142,20 @@ class _PostCardState extends State<PostCard> {
                 isAnimating: widget.post.likes.contains(user.uid),
                 smallLike: true,
                 child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.favorite,
-                      color: Colors.red,
-                    )),
+                    onPressed: () async {
+                      await FirestoreMethods().likePost(
+                        widget.post.postId,
+                        widget.post.uid,
+                        widget.post.likes,
+                      );
+                      setState(() {
+                        isLikeAnimating = true;
+                      });
+                    },
+                    icon: widget.post.likes.contains(user.uid)
+                        ? const Icon(Icons.favorite, color: Colors.red)
+                        : const Icon(Icons.favorite_outline,
+                            color: primaryColor)),
               ),
               IconButton(onPressed: () {}, icon: const Icon(Icons.comment)),
               IconButton(onPressed: () {}, icon: const Icon(Icons.send)),
