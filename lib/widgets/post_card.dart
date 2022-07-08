@@ -3,6 +3,7 @@ import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/models/user.dart';
 import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/resources/firestore_methods.dart';
+import 'package:instagram_clone/screens/comments_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
@@ -157,7 +158,13 @@ class _PostCardState extends State<PostCard> {
                         : const Icon(Icons.favorite_outline,
                             color: primaryColor)),
               ),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.comment)),
+              IconButton(
+                  onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const CommentsScreen(),
+                        ),
+                      ),
+                  icon: const Icon(Icons.comment)),
               IconButton(onPressed: () {}, icon: const Icon(Icons.send)),
               Expanded(
                   child: Align(
