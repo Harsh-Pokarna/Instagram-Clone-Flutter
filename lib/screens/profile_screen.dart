@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/resources/auth_methods.dart';
 import 'package:instagram_clone/resources/firestore_methods.dart';
+import 'package:instagram_clone/screens/login_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/widgets/follow_button.dart';
 
@@ -93,8 +95,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ? FollowButton(
                                         backgroundColor: primaryColor,
                                         textColor: Colors.black,
-                                        text: 'Edit Profile',
-                                        function: () {},
+                                        text: 'Sign Out',
+                                        function: () async {
+                                          await AuthMethods().signOut();
+                                          Navigator.of(context).pushReplacement(
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      const LoginScreen()));
+                                        },
                                       )
                                     : isFollowing
                                         ? FollowButton(
@@ -123,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               setState(() {
                                                 isFollowing = true;
                                                 followers++;
-                                              }); 
+                                              });
                                               await FirestoreMethods()
                                                   .followUser(
                                                       currnetUid: FirebaseAuth
