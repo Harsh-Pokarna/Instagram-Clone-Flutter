@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/utils/colors.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
 class SearchScreen extends StatefulWidget {
   SearchScreen({Key? key}) : super(key: key);
@@ -37,32 +38,54 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         backgroundColor: mobileBackgroundColor,
       ),
-      body: _isShowUsers ? FutureBuilder(
-        future: FirebaseFirestore.instance
-            .collection('users')
-            .where('username', isGreaterThanOrEqualTo: _searchController.text)
-            .get(),
-        builder:
-            (_, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return ListView.builder(
-              itemBuilder: (_, index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                      backgroundImage: NetworkImage(snapshot.data!.docs[index]['photoUrl'])),
-                  title: Text(snapshot.data!.docs[index]['username']),
-                );
+      body: _isShowUsers
+          ? FutureBuilder(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .where('username',
+                      isGreaterThanOrEqualTo: _searchController.text)
+                  .get(),
+              builder: (_,
+                  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  return ListView.builder(
+                    itemBuilder: (_, index) {
+                      return ListTile(
+                        leading: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                                snapshot.data!.docs[index]['photoUrl'])),
+                        title: Text(snapshot.data!.docs[index]['username']),
+                      );
+                    },
+                    itemCount: snapshot.data!.docs.length,
+                  );
+                }
               },
-              itemCount: snapshot.data!.docs.length,
-            );
-          }
-        },
-      ) : Text('Posts')
+            )
+          : FutureBuilder(
+              future: FirebaseFirestore.instance.collection('posts').get(),
+              builder: (context,
+                  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                } else {
+                  return StaggeredGridView.countBuilder(
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    crossAxisCount: 3,
+                    itemBuilder: (context, index) => 
+                        Image.network(snapshot.data!.docs[index]['postUrl']),
+                    staggeredTileBuilder: (index) => StaggeredTile.count(
+                        (index % 7 == 0) ? 2 : 1, (index % 7 == 0) ? 2 : 1),
+                    itemCount: snapshot.data!.docs.length,
+                  );
+                }
+              },
+            ),
     );
   }
 }
- 
