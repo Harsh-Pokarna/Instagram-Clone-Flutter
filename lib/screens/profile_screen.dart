@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/resources/firestore_methods.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/widgets/follow_button.dart';
 
@@ -100,13 +101,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             backgroundColor: primaryColor,
                                             textColor: Colors.black,
                                             text: 'Unfollow',
-                                            function: () {},
+                                            function: () async {
+                                              setState(() {
+                                                isFollowing = false;
+                                                followers--;
+                                              });
+                                              await FirestoreMethods()
+                                                  .followUser(
+                                                      currnetUid: FirebaseAuth
+                                                          .instance
+                                                          .currentUser!
+                                                          .uid,
+                                                      followUid: widget.uid);
+                                            },
                                           )
                                         : FollowButton(
                                             backgroundColor: blueColor,
                                             textColor: primaryColor,
                                             text: 'Follow',
-                                            function: () {},
+                                            function: () async {
+                                              setState(() {
+                                                isFollowing = true;
+                                                followers++;
+                                              }); 
+                                              await FirestoreMethods()
+                                                  .followUser(
+                                                      currnetUid: FirebaseAuth
+                                                          .instance
+                                                          .currentUser!
+                                                          .uid,
+                                                      followUid: widget.uid);
+                                            },
                                           ),
                               ],
                             ),
@@ -154,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     } else {
                       return GridView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
                           shrinkWrap: true,
                           itemCount: snapshot.data!.docs.length,
                           gridDelegate:
