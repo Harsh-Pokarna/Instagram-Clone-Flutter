@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/models/user.dart';
+import 'package:instagram_clone/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class CommentCard extends StatefulWidget {
   CommentCard({Key? key}) : super(key: key);
@@ -10,6 +13,7 @@ class CommentCard extends StatefulWidget {
 class _CommentCardState extends State<CommentCard> {
   @override
   Widget build(BuildContext context) {
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
       child: Row(
