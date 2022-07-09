@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/screens/profile_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
@@ -54,11 +55,17 @@ class _SearchScreenState extends State<SearchScreen> {
                 } else {
                   return ListView.builder(
                     itemBuilder: (_, index) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                snapshot.data!.docs[index]['photoUrl'])),
-                        title: Text(snapshot.data!.docs[index]['username']),
+                      return InkWell(
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (_) => ProfileScreen(
+                                    uid: snapshot.data!.docs[index]['uid']))),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                  snapshot.data!.docs[index]['photoUrl'])),
+                          title: Text(snapshot.data!.docs[index]['username']),
+                        ),
                       );
                     },
                     itemCount: snapshot.data!.docs.length,
@@ -77,7 +84,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     mainAxisSpacing: 8,
                     crossAxisSpacing: 8,
                     crossAxisCount: 3,
-                    itemBuilder: (context, index) => 
+                    itemBuilder: (context, index) =>
                         Image.network(snapshot.data!.docs[index]['postUrl']),
                     staggeredTileBuilder: (index) => StaggeredTile.count(
                         (index % 7 == 0) ? 2 : 1, (index % 7 == 0) ? 2 : 1),
