@@ -137,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const Padding(
-                  padding: EdgeInsets.symmetric(12),
+                  padding: EdgeInsets.symmetric(horizontal: 12),
                   child: Divider(color: Colors.grey),
                 ),
                 FutureBuilder(
