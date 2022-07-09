@@ -209,19 +209,6 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                 ),
-                InkWell(
-                  onTap: (() {}),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: const Text(
-                      'View all 200 comments',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: secondaryColor,
-                      ),
-                    ),
-                  ),
-                ),
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(

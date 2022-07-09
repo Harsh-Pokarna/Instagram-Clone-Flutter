@@ -1,7 +1,12 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/resources/firestore_methods.dart';
 import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/utils/utils.dart';
 import 'package:instagram_clone/widgets/comment_card.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +45,27 @@ class _CommentsScreenState extends State<CommentsScreen> {
         title: const Text('Comments'),
         backgroundColor: mobileBackgroundColor,
       ),
-      body: CommentCard(),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('posts')
+            .doc(widget.post.postId)
+            .collection('comments')
+            .orderBy('datePublished', descending: true)
+            .snapshots(),
+        builder: (context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+          Widget widget = Container();
+          if (snapshot.connectionState == ConnectionState.active) {
+            widget =  ListView.builder(
+              itemBuilder: ((context, index) => CommentCard(map: snapshot.data!.docs[index].data())),
+              itemCount: snapshot.data!.docs.length,
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            widget = const Center(child: CircularProgressIndicator());
+          }
+          return widget;
+        },
+      ),
       bottomNavigationBar: SafeArea(
         child: Container(
           height: kToolbarHeight,
@@ -71,11 +96,13 @@ class _CommentsScreenState extends State<CommentsScreen> {
               ),
               InkWell(
                 onTap: () async {
+                  hideKeyboard();
                   await FirestoreMethods().postComment(
                     postId: widget.post.postId,
                     text: _commentController.text,
                     user: user,
                   );
+                  _commentController.text = '';
                 },
                 child: Container(
                   padding: const EdgeInsets.all(8),

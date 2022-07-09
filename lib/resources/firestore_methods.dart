@@ -66,10 +66,10 @@ class FirestoreMethods {
         String commentId = const Uuid().v1();
         await _firestore.collection('posts').doc(postId).collection('comments').doc(commentId).set({
           'profilePic': user.photoUrl,
-          'name': user.username,
+          'username': user.username,
           'uid': user.uid,
           'commentId': commentId,
-          'datePublised': DateTime.now(),
+          'datePublished': DateTime.now(),
           'text': text,
         });
 
