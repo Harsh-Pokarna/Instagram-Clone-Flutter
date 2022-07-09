@@ -88,7 +88,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       );
 
       if (res == 'success') {
-        showSnackBar('Image has been posted', context);
+        showSnackBar('Image posted', context);
       } else {
         showSnackBar(res, context);
       }
