@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/global_variables.dart';
+import 'package:instagram_clone/widgets/my_message_card.dart';
+import 'package:instagram_clone/widgets/sender_message_card.dart';
 
 class ChatScreen extends StatefulWidget {
   ChatScreen({Key? key}) : super(key: key);
@@ -51,57 +53,63 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      body: Container(
-        color: Colors.red,
-        child: GestureDetector(
-          onTap: () {
-            print('tapped');
-            FocusScope.of(context).requestFocus(null);
-          },
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                   Expanded(
-                  child: GestureDetector(
-                      onTap: () {
-                        print('tapped new');
-                        FocusManager.instance.primaryFocus?.unfocus();
-                      },
-                      child: Container(
-                        color: Colors.blue,
-                      ),
-                    ),
-                ),
-                ],
+      body: Stack(
+        children: [
+          GestureDetector(
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 65),
+              height: double.infinity,
+              width: double.infinity,
+              color: mobileBackgroundColor,
+              child: ListView.builder(
+                itemBuilder: (_, index) => index % 2 == 0
+                    ? const MyMessageCard(
+                        text:
+                            'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs')
+                    : const SenderMessageCard(
+                        text:
+                            'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs'),
+                itemCount: 20,
+                shrinkWrap: true,
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  height: 60,
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(
-                        Icons.camera_alt,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide.none,
-                      ),
-                      fillColor: mobileSearchColor,
-                      filled: true,
-                    ),
-                    controller: _messageController,
-                  ),
-                ),
-              )
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: 60,
+              margin: const EdgeInsets.symmetric(horizontal: 2),
+              child: TextField(
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(
+                    Icons.camera_alt,
+                    color: Colors.grey,
+                  ),
+                  suffix:
+                     GestureDetector(
+                      onTap: () {},
+                       child: const Padding(
+                         padding: EdgeInsets.only(right: 8),
+                         child: Text('Send', style: TextStyle(color: blueColor, fontWeight: FontWeight.bold)),
+                       ),
+                     ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    borderSide: BorderSide.none,
+                  ),
+                  fillColor: mobileSearchColor,
+                  filled: true,
+                ),
+                controller: _messageController,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
