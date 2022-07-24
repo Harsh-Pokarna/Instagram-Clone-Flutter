@@ -65,8 +65,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       ? ListView.builder(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           itemBuilder: (_, index) {
-                            print('new block');
-                            print(snapshot.data!.docs.toString());
                             User user =
                                 User.fromSanp(snapshot.data!.docs[index]);
                             return InkWell(
