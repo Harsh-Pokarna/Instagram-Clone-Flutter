@@ -61,16 +61,18 @@ class _MessagesScreenState extends State<MessagesScreen> {
               builder: (context,
                       AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
                           snapshot) =>
-                  snapshot.connectionState == ConnectionState.active
+                  snapshot.data != null
                       ? ListView.builder(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           itemBuilder: (_, index) {
+                            print('new block');
+                            print(snapshot.data!.docs.toString());
                             User user =
                                 User.fromSanp(snapshot.data!.docs[index]);
                             return InkWell(
                               onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute(
-                                      builder: (_) => ChatScreen())),
+                                      builder: (_) => ChatScreen(user: user))),
                               child: Container(
                                   margin: const EdgeInsets.only(
                                       bottom: 16, left: 16, right: 8),

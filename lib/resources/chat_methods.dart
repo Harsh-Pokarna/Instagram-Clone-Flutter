@@ -8,7 +8,7 @@ class ChatMethods {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;     
 
   Future<String> saveChat(ChatMessage chatMessage) async {
-    final String messageId = Uuid().v1();
+    final String messageId = const Uuid().v1();
     String res = 'Some error occured';
 
     try {
@@ -27,7 +27,7 @@ class ChatMethods {
         'message': chatMessage.message,
         'dateTime': chatMessage.dateTime,
         'sentByMe': !chatMessage.sentByMe,
-        'otherPersonId': chatMessage.receiverId,
+        'receiverId': chatMessage.receiverId,
       });
 
       res = 'Success';
@@ -36,4 +36,5 @@ class ChatMethods {
     }
     return res;
   }
+  
 }

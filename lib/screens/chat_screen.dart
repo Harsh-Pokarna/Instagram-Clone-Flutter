@@ -1,12 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/models/chat_message.dart';
+import 'package:instagram_clone/models/user.dart' as model;
+import 'package:instagram_clone/resources/chat_methods.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/global_variables.dart';
+import 'package:instagram_clone/utils/utils.dart';
 import 'package:instagram_clone/widgets/my_message_card.dart';
 import 'package:instagram_clone/widgets/sender_message_card.dart';
 
 class ChatScreen extends StatefulWidget {
-  ChatScreen({Key? key}) : super(key: key);
+  final model.User user;
+  ChatScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -21,7 +27,12 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void _sendMessage() {
+  void _sendMessage(ChatMessage chatMessage) async {
+    try {
+      await ChatMethods().saveChat(chatMessage);
+    } catch (error) {
+      showSnackBar(error.toString(), context);
+    }
   }
 
   @override
@@ -68,16 +79,34 @@ class _ChatScreenState extends State<ChatScreen> {
               height: double.infinity,
               width: double.infinity,
               color: mobileBackgroundColor,
-              child: ListView.builder(
-                itemBuilder: (_, index) => index % 2 == 0
-                    ? const MyMessageCard(
-                        text:
-                            'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs')
-                    : const SenderMessageCard(
-                        text:
-                            'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs'),
-                itemCount: 20,
-                shrinkWrap: true,
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('chats')
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .collection(widget.user.uid)
+                    .snapshots(),
+                builder: (context,
+                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                        snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    return ListView.builder(
+                      itemBuilder: (context, index) {
+                        ChatMessage chatMessage = ChatMessage.fromSanp(
+                            snapshot.data!.docs[index].data());
+                        if (chatMessage.sentByMe) {
+                          return MyMessageCard(text: chatMessage.message);
+                        } else {
+                          return SenderMessageCard(text: chatMessage.message);
+                        }
+                      },
+                      itemCount: snapshot.data!.docs.length,
+                      shrinkWrap: true,
+                    );
+                  } else {
+                    return const Center(
+                        child: CircularProgressIndicator(color: primaryColor));
+                  }
+                },
               ),
             ),
           ),
@@ -94,14 +123,21 @@ class _ChatScreenState extends State<ChatScreen> {
                     Icons.camera_alt,
                     color: Colors.grey,
                   ),
-                  suffix:
-                     GestureDetector(
-                      onTap: () {},
-                       child: const Padding(
-                         padding: EdgeInsets.only(right: 8),
-                         child: Text('Send', style: TextStyle(color: blueColor, fontWeight: FontWeight.bold)),
-                       ),
-                     ),
+                  suffix: GestureDetector(
+                    onTap: () {
+                      _sendMessage(ChatMessage(
+                          message: _messageController.text,
+                          dateTime: DateTime.now(),
+                          sentByMe: true,
+                          receiverId: widget.user.uid));
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: Text('Send',
+                          style: TextStyle(
+                              color: blueColor, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(100),
                     borderSide: BorderSide.none,

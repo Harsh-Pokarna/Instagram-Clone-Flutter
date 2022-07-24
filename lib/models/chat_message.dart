@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 class ChatMessage with ChangeNotifier {
   final String message;
-  final DateTime dateTime;
+  final dateTime;
   final bool sentByMe;
   final String receiverId;
 
