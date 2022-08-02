@@ -45,11 +45,11 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundImage: NetworkImage(placeHolderUrl),
+              backgroundImage: NetworkImage(widget.user.photoUrl),
             ),
             const SizedBox(width: 10),
             Text(
-              'username',
+              widget.user.username,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
@@ -84,6 +84,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     .collection('chats')
                     .doc(FirebaseAuth.instance.currentUser!.uid)
                     .collection(widget.user.uid)
+                    .orderBy('dateTime')
                     .snapshots(),
                 builder: (context,
                     AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
@@ -116,7 +117,7 @@ class _ChatScreenState extends State<ChatScreen> {
             bottom: 0,
             child: Container(
               height: 60,
-              margin: const EdgeInsets.symmetric(horizontal: 2),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
               child: TextField(
                 decoration: InputDecoration(
                   prefixIcon: const Icon(
@@ -125,11 +126,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   suffix: GestureDetector(
                     onTap: () {
+                      String text = _messageController.text;
                       _sendMessage(ChatMessage(
-                          message: _messageController.text,
+                          message: text,
                           dateTime: DateTime.now(),
                           sentByMe: true,
                           receiverId: widget.user.uid));
+                      _messageController.text = "";
+                      hideKeyboard();
                     },
                     child: const Padding(
                       padding: EdgeInsets.only(right: 8),

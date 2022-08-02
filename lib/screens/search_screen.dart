@@ -40,12 +40,12 @@ class _SearchScreenState extends State<SearchScreen> {
         backgroundColor: mobileBackgroundColor,
       ),
       body: _isShowUsers
-          ? FutureBuilder(
-              future: FirebaseFirestore.instance
+          ? StreamBuilder(
+              stream: FirebaseFirestore.instance
                   .collection('users')
                   .where('username',
                       isGreaterThanOrEqualTo: _searchController.text)
-                  .get(),
+                  .snapshots(),
               builder: (_,
                   AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
                 if (!snapshot.hasData) {
